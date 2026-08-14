@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { Counter } from "@/components/site/Counter";
+import { HeroBackdrop } from "@/components/site/HeroBackdrop";
 import { Reveal } from "@/components/site/Reveal";
 import { CarCard, type Car } from "@/components/site/CarCard";
 import { InquireModal } from "@/components/site/InquireModal";
@@ -46,6 +47,8 @@ const HERO_STATS = [
 function Hero() {
   return (
     <section className="hero-bg relative flex min-h-screen items-center overflow-hidden pt-24">
+      {/* Cinematic blurred slideshow / video backdrop (see src/lib/hero-media.ts) */}
+      <HeroBackdrop />
       <div className="grid-pattern absolute inset-0" aria-hidden="true" />
       <div className="container-site relative">
         <motion.div
