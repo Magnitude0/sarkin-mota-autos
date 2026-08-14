@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0A0A0A"/>
+  <defs>
+    <linearGradient id="sm-gold" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE566"/>
+      <stop offset="1" stop-color="#C9A227"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(6,14) scale(0.4333)">
+    <path d="M8 8 L50 8 L64 68 L8 68 Z" fill="url(#sm-gold)"/>
+    <path d="M70 8 L112 8 L112 68 L56 68 Z" fill="url(#sm-gold)"/>
+  </g>
+</svg>

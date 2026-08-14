@@ -163,9 +163,6 @@ export function Footer() {
             <Link to="/contact" className="transition-colors hover:text-gold">
               Contact
             </Link>
-            <Link to="/admin" className="transition-colors hover:text-gold">
-              Admin
-            </Link>
           </div>
         </div>
       </div>

@@ -76,11 +76,10 @@ const schema = defineSchema(
       .index("by_status", ["status"])
       .index("by_createdAt", ["createdAt"]),
 
-    // Lead inquiries from all site forms
+    // Lead inquiries from all site forms (WhatsApp/phone-first — no email collected)
     inquiries: defineTable({
       name: v.string(),
       phone: v.string(),
-      email: v.optional(v.string()),
       carInterest: v.optional(v.string()),
       message: v.optional(v.string()),
       status: inquiryStatusValidator, // new | contacted

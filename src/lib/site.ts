@@ -82,7 +82,6 @@ export function calcEMI(
 export function buildInquiryMsg(data: {
   name: string;
   phone: string;
-  email?: string;
   machine?: string;
   message?: string;
 }): string {
@@ -91,7 +90,6 @@ export function buildInquiryMsg(data: {
     "",
     `Name: ${data.name}`,
     `Phone: ${data.phone}`,
-    `Email: ${data.email?.trim() || "N/A"}`,
     `Machine: ${data.machine?.trim() || "General"}`,
     `Message: ${data.message?.trim() || "None"}`,
     "",

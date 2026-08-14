@@ -217,7 +217,6 @@ const SAMPLE_INQUIRIES = [
   {
     name: "Aminu Ibrahim",
     phone: "0803 123 4567",
-    email: "aminu@example.com",
     carInterest: "Toyota Land Cruiser 2019",
     message: "What is the final price? And can you deliver to Kano?",
     status: "new" as const,
@@ -226,7 +225,6 @@ const SAMPLE_INQUIRIES = [
   {
     name: "Chidinma Okafor",
     phone: "0812 987 6543",
-    email: "chidinma@example.com",
     carInterest: "Lexus RX 350 2020",
     message: "Interested in the 40% deposit plan. What's the monthly?",
     status: "contacted" as const,

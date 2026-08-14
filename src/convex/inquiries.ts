@@ -1,6 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
-import { api } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 
 /**
@@ -11,7 +10,6 @@ export const create = mutation({
   args: {
     name: v.string(),
     phone: v.string(),
-    email: v.optional(v.string()),
     carInterest: v.optional(v.string()),
     message: v.optional(v.string()),
   },
@@ -24,23 +22,11 @@ export const create = mutation({
     await ctx.db.insert("inquiries", {
       name,
       phone,
-      email: args.email?.trim() || undefined,
       carInterest: args.carInterest?.trim() || undefined,
       message: args.message?.trim() || undefined,
       status: "new",
       createdAt: Date.now(),
     });
-
-    // Fire-and-forget email notification to the admin (no-op until a Knock
-    // API key is configured).
-    await ctx.scheduler.runAfter(0, api.notifications.notifyAdmin, {
-      name,
-      phone,
-      email: args.email?.trim() || undefined,
-      carInterest: args.carInterest?.trim() || undefined,
-      message: args.message?.trim() || undefined,
-    });
-
     return true;
   },
 });

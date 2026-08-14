@@ -1,26 +1,29 @@
-import { Crown } from "lucide-react";
+import { useId } from "react";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 
+/**
+ * The Sarkin Mota "M" mark — two intersecting golden angular blocks with a
+ * diagonal negative-space cut, per the company logo.
+ */
 export function LogoMark({ size = 44 }: { size?: number }) {
+  const gradientId = useId();
   return (
     <span
-      className="relative inline-flex shrink-0 items-center justify-center rounded-xl"
-      style={{
-        width: size,
-        height: size,
-        background:
-          "linear-gradient(135deg, rgba(255,215,0,0.22), rgba(200,16,46,0.16))",
-        border: "1px solid rgba(255,215,0,0.4)",
-        boxShadow: "0 0 24px rgba(255,215,0,0.18)",
-      }}
+      className="inline-flex shrink-0 items-center justify-center"
+      style={{ width: size, height: size }}
+      aria-hidden="true"
     >
-      <Crown
-        className="text-gold"
-        style={{ width: size * 0.58, height: size * 0.58 }}
-        fill="currentColor"
-        strokeWidth={1.2}
-      />
+      <svg viewBox="0 0 120 84" style={{ width: "100%", height: "100%" }}>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#FFE566" />
+            <stop offset="1" stopColor="#C9A227" />
+          </linearGradient>
+        </defs>
+        <path d="M8 8 L50 8 L64 68 L8 68 Z" fill={`url(#${gradientId})`} />
+        <path d="M70 8 L112 8 L112 68 L56 68 Z" fill={`url(#${gradientId})`} />
+      </svg>
     </span>
   );
 }

@@ -9,7 +9,7 @@ const SECTIONS = [
   },
   {
     title: "2. What Data We Collect",
-    body: "We only collect the information you choose to give us through our enquiry forms: your name, phone number, and (if you provide it) email address, plus the machine you are interested in and any message you send. We never collect payment card details, location tracking, or data from your device.",
+    body: "We only collect the information you choose to give us through our enquiry forms: your name and phone number, plus the machine you are interested in and any message you send. We never collect payment card details, location tracking, or data from your device.",
   },
   {
     title: "3. How We Use It",

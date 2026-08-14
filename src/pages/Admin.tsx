@@ -288,11 +288,10 @@ function LeadsPanel({ leads }: { leads: Lead[] | undefined }) {
 
   const exportCsv = () => {
     const rows = [
-      ["Name", "Phone", "Email", "Machine", "Message", "Date", "Status"],
+      ["Name", "Phone", "Machine", "Message", "Date", "Status"],
       ...(leads ?? []).map((l) => [
         l.name,
         l.phone,
-        l.email ?? "",
         l.carInterest ?? "",
         l.message ?? "",
         new Date(l.createdAt).toISOString(),
@@ -332,7 +331,6 @@ function LeadsPanel({ leads }: { leads: Lead[] | undefined }) {
             <tr className="border-b border-white/10 text-left font-display text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#888]">
               <th className="px-4 py-3.5">Name</th>
               <th className="px-4 py-3.5">Phone</th>
-              <th className="px-4 py-3.5">Email</th>
               <th className="px-4 py-3.5">Machine</th>
               <th className="px-4 py-3.5">Date</th>
               <th className="px-4 py-3.5">Status</th>
@@ -370,7 +368,6 @@ function LeadsPanel({ leads }: { leads: Lead[] | undefined }) {
                       <Phone className="h-3 w-3" /> {l.phone}
                     </a>
                   </td>
-                  <td className="px-4 py-3 text-[#b8b8b8]">{l.email ?? "—"}</td>
                   <td className="px-4 py-3 text-[#b8b8b8]">
                     {l.carInterest ?? "General"}
                   </td>

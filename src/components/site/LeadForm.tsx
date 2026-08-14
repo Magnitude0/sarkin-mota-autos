@@ -29,7 +29,6 @@ export function LeadForm({
   const saveLead = useMutation(api.inquiries.create);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [machineValue, setMachineValue] = useState(machine ?? "");
   const [message, setMessage] = useState("");
   const [consent, setConsent] = useState(false);
@@ -54,7 +53,6 @@ export function LeadForm({
       await saveLead({
         name: name.trim(),
         phone: phone.trim(),
-        email: email.trim() || undefined,
         carInterest: machineValue.trim() || undefined,
         message: message.trim() || undefined,
       });
@@ -63,7 +61,6 @@ export function LeadForm({
           buildInquiryMsg({
             name: name.trim(),
             phone: phone.trim(),
-            email: email.trim(),
             machine: machineValue.trim(),
             message: message.trim(),
           }),
@@ -72,7 +69,6 @@ export function LeadForm({
       setSent(true);
       setName("");
       setPhone("");
-      setEmail("");
       setMachineValue(machine ?? "");
       setMessage("");
       setConsent(false);
@@ -126,22 +122,6 @@ export function LeadForm({
               disabled={submitting}
             />
           </div>
-        </div>
-
-        <div>
-          <label htmlFor="lf-email" className="field-label">
-            Email <span className="normal-case text-[#666]">(optional)</span>
-          </label>
-          <input
-            id="lf-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@email.com"
-            autoComplete="email"
-            className="input-dark"
-            disabled={submitting}
-          />
         </div>
 
         {machine !== undefined ? (
