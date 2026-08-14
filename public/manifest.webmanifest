@@ -8,16 +8,16 @@
   "theme_color": "#0A0A0A",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/assets/brand-logo-light.jpg",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/logo.svg",
+      "src": "/assets/brand-logo-light.jpg",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/jpeg",
+      "purpose": "maskable"
     }
   ]
 }

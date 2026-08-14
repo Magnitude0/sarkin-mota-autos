@@ -1,11 +1,12 @@
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
-import logoUrl from "@/assets/logo.svg";
 
 /**
- * The real Sarkin Mota company logo (black tile with the white "M" mark).
+ * The real Sarkin Mota company logo (gold "M" mark + SARKINMOTA wordmark).
  * Used everywhere the brand appears — header, footer, auth and admin.
  */
+const BRAND_LOGO_URL = "/assets/brand-logo-light.jpg";
+
 export function LogoMark({
   size = 44,
   className,
@@ -15,13 +16,13 @@ export function LogoMark({
 }) {
   return (
     <img
-      src={logoUrl}
+      src={BRAND_LOGO_URL}
       alt=""
       aria-hidden="true"
       width={size}
       height={size}
       draggable={false}
-      className={cn("shrink-0 select-none", className)}
+      className={cn("shrink-0 select-none rounded-md object-contain", className)}
       style={{ width: size, height: size }}
     />
   );
