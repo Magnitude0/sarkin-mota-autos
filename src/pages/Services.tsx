@@ -77,7 +77,7 @@ export default function Services() {
             <span className="text-gold">Machines</span> 👑
           </>
         }
-        sub="From the first WhatsApp message to years after delivery, Sarkin Mota Autos handles the entire machine lifecycle."
+        sub="From the first WhatsApp message to years after delivery, Sarkin Mota Autos handles the entire machine lifecycle — for individuals and businesses alike."
       />
 
       <section className="py-14 sm:py-20">

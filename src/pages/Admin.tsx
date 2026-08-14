@@ -96,6 +96,14 @@ function OverviewPanel({
 
   return (
     <div className="flex flex-col gap-8">
+      <div>
+        <h2 className="font-display text-2xl font-black text-white">
+          The Kingdom at a <span className="text-gold">Glance</span>
+        </h2>
+        <p className="mt-1 text-sm text-[#888]">
+          Welcome back, My Bratha — here&apos;s how the showroom is doing today.
+        </p>
+      </div>
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Total Machines"

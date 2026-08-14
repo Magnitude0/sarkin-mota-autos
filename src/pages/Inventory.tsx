@@ -364,7 +364,7 @@ export default function Inventory() {
                     <CarIcon className="h-7 w-7 text-gold" />
                   </span>
                   <h3 className="mt-4 font-display text-xl font-black text-white">
-                    No machines match those filters
+                    No machines match your filters
                   </h3>
                   <p className="mx-auto mt-2 max-w-sm text-sm text-[#888]">
                     Try widening your search — or chat My Bratha and we&apos;ll

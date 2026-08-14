@@ -2,12 +2,14 @@ import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Bell,
   Car as CarIcon,
   ChevronDown,
   Crown,
   Gauge,
   LayoutGrid,
   Mountain,
+  Play,
   Truck,
   Wrench,
   Zap,
@@ -21,7 +23,7 @@ import { CarCard, type Car } from "@/components/site/CarCard";
 import { InquireModal } from "@/components/site/InquireModal";
 import { LeadForm } from "@/components/site/LeadForm";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { WhatsAppIcon } from "@/components/site/icons";
+import { TikTokIcon, WhatsAppIcon } from "@/components/site/icons";
 import {
   calcEMI,
   CATEGORIES,
@@ -400,7 +402,7 @@ function EMICalculator() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="field-label mb-1">Est. Monthly</p>
+                  <p className="field-label mb-1">Est. Monthly Payment</p>
                   <p className="font-display text-xl font-extrabold text-white">
                     {new Intl.NumberFormat("en-NG", {
                       style: "currency",
@@ -427,7 +429,7 @@ function EMICalculator() {
                 className="btn btn-gold btn-block"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                Match Machines To My Budget
+                Match Machines to My Budget
               </a>
               <p className="text-center text-xs text-[#888]">
                 Indicative terms at 15% p.a. Contact showroom for personalised
@@ -565,6 +567,83 @@ function Testimonials() {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────── Social funnel ───────────────────── */
+
+const SOCIAL_POINTS = [
+  { icon: Play, text: "Walkaround videos of every fresh arrival" },
+  { icon: Bell, text: "First dibs before a machine hits the floor" },
+  { icon: Crown, text: "One tap straight to Aliyu's WhatsApp" },
+];
+
+function SocialStrip() {
+  return (
+    <section className="py-20 sm:py-24">
+      <div className="container-site">
+        <Reveal>
+          <div
+            className="relative overflow-hidden rounded-[20px] border border-gold/25 p-8 shadow-[0_8px_40px_rgba(0,0,0,0.5)] sm:p-12"
+            style={{
+              transform: "none",
+              background:
+                "radial-gradient(ellipse at 10% 20%, rgba(255,215,0,0.16) 0%, transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(200,16,46,0.14) 0%, transparent 50%), linear-gradient(135deg, #131310, #0a0a0a)",
+            }}
+          >
+            <div className="grid items-center gap-10 lg:grid-cols-[1fr_360px]">
+              <div>
+                <span className="section-label">See It Before Anyone Else</span>
+                <h2 className="h-display mt-4 text-[clamp(1.6rem,3.5vw,2.6rem)] text-white">
+                  Every Machine Drops on{" "}
+                  <span className="text-gold">TikTok First</span> 📱
+                </h2>
+                <p className="mt-4 max-w-xl text-[#b8b8b8]">
+                  Aliyu films every fresh arrival himself — walkarounds, first
+                  starts and honest talk. Watch it live, then message My Bratha
+                  to secure it before the post takes off.
+                </p>
+                <div className="mt-7 flex flex-col gap-4 sm:flex-row">
+                  <a
+                    href="https://www.tiktok.com/@sarkinmota"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-white"
+                  >
+                    <TikTokIcon className="h-4 w-4" /> Follow @sarkinmota
+                  </a>
+                  <a
+                    href={WA_GENERAL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-wa"
+                  >
+                    <WhatsAppIcon className="h-4 w-4" /> Claim It on WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                {SOCIAL_POINTS.map((p) => (
+                  <div
+                    key={p.text}
+                    className="flex items-center gap-3 rounded-2xl border border-gold/20 bg-black/40 p-4"
+                    style={{ transform: "none" }}
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-gold/10">
+                      <p.icon className="h-4 w-4 text-gold" />
+                    </span>
+                    <p className="text-sm font-semibold leading-snug text-[#e8e8e8]">
+                      {p.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -721,6 +800,7 @@ export default function Landing() {
       <div className="gold-divider container-site" aria-hidden="true" />
       <Categories />
       <Testimonials />
+      <SocialStrip />
       <VIPSection />
       <SourcingBanner />
       <section className="pb-20">
