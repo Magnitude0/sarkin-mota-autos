@@ -23,18 +23,31 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   ],
   callbacks: {
     // Runs inside the auth mutation every time an account is created.
-    // Enforces the account cap server-side (not just in the UI).
+    // Enforces the account policy server-side (not just in the UI):
+    //  - Public sign-up is only ever allowed for the very first account
+    //    (the bootstrap). After that, seats are granted by an existing
+    //    admin via api.accounts.createUser, which passes `_createdByAdmin`.
+    //  - The total is hard-capped at MAX_ADMIN_ACCOUNTS for every path.
     createOrUpdateUser: async (ctx, { existingUserId, profile }) => {
+      const { _createdByAdmin = false, ...userFields } = profile as Record<
+        string,
+        unknown
+      > & { _createdByAdmin?: boolean };
       if (existingUserId === null) {
         const count = (await ctx.db.query("users").collect()).length;
         if (count >= MAX_ADMIN_ACCOUNTS) {
           throw new ConvexError(
-            `All ${MAX_ADMIN_ACCOUNTS} admin seats are taken — sign-ups are closed, My Bratha.`,
+            `All ${MAX_ADMIN_ACCOUNTS} admin seats are taken — no more accounts can be created, My Bratha.`,
           );
         }
-        return await ctx.db.insert("users", profile);
+        if (!_createdByAdmin && count >= 1) {
+          throw new ConvexError(
+            "Public sign-ups are closed — new accounts are added by an existing admin, My Bratha.",
+          );
+        }
+        return await ctx.db.insert("users", userFields);
       }
-      await ctx.db.patch(existingUserId, profile);
+      await ctx.db.patch(existingUserId, userFields);
       return existingUserId;
     },
   },

@@ -51,8 +51,11 @@ function friendlyAuthError(err: unknown, mode: Mode): string {
   if (lower.includes("password") && lower.includes("at least")) {
     return `Password must be at least ${PASSWORD_MIN} characters.`;
   }
-  if (lower.includes("seats are taken") || lower.includes("sign-ups are closed")) {
-    return "All three admin seats are taken — sign-ups are closed, My Bratha.";
+  if (lower.includes("seats are taken")) {
+    return `All ${MAX_ADMIN_ACCOUNTS} admin seats are taken — no more accounts can be created, My Bratha.`;
+  }
+  if (lower.includes("sign-ups are closed") || lower.includes("public sign-ups")) {
+    return "Public sign-ups are closed — new accounts are added by an existing admin, My Bratha.";
   }
   if (lower.includes("email")) {
     return "That email doesn't look right. Check it and try again.";
@@ -72,11 +75,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     redirectAfterAuth,
   );
 
-  // Live account count so the sign-up tab knows how many seats are left.
+  // Live account count. Public sign-up is only open while there are zero
+  // accounts (the bootstrap). After that, seats are granted by an existing
+  // admin from the dashboard.
   const accountCount = useQuery(api.users.count);
-  const seatsFull = accountCount !== undefined && accountCount >= MAX_ADMIN_ACCOUNTS;
-  const seatsTaken = accountCount ?? 0;
-  const seatsLeft = Math.max(MAX_ADMIN_ACCOUNTS - seatsTaken, 0);
+  const bootstrapOpen = accountCount === 0;
 
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -91,6 +94,15 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
   }, [authLoading, isAuthenticated, navigate, redirect]);
 
+  // If someone else claims the first seat while we're on the sign-up tab,
+  // drop back to sign-in — the seat is gone.
+  useEffect(() => {
+    if (mode === "signup" && accountCount !== undefined && accountCount > 0) {
+      setMode("signin");
+      setError(null);
+    }
+  }, [mode, accountCount]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = email.trim();
@@ -103,8 +115,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       setError("Enter your password to continue.");
       return;
     }
-    if (mode === "signup" && seatsFull) {
-      setError("All three admin seats are taken — sign-ups are closed, My Bratha.");
+    if (mode === "signup" && !bootstrapOpen) {
+      setError(
+        "Sign-ups are closed — new accounts are added by an existing admin, My Bratha.",
+      );
       return;
     }
     if (mode === "signup" && password.length < PASSWORD_MIN) {
@@ -180,45 +194,42 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <p className="mt-1.5 text-sm text-[#888]">
               {mode === "signin"
                 ? "Enter your email and password to reach the command room."
-                : "Create the one account that runs the showroom. Sign in right after."}
+                : "Claim the very first seat — the key to the showroom."}
             </p>
           </div>
 
-          {/* Mode toggle */}
-          <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-[#101012] p-1">
-            {(
-              [
-                { id: "signin", label: "Sign In" },
-                { id: "signup", label: "Create Account" },
-              ] as const
-            ).map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => switchMode(t.id)}
-                className={cn(
-                  "rounded-lg py-2 font-display text-xs font-extrabold uppercase tracking-[0.12em] transition-colors",
-                  mode === t.id
-                    ? "bg-gold/15 text-gold"
-                    : "text-[#888] hover:text-white",
-                )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {mode === "signup" && seatsFull ? (
-            <div className="mt-6 rounded-xl border border-gold/30 bg-gold/10 px-4 py-5 text-center">
-              <p className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-gold">
-                Seats Full 👑
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-[#c9c9c9]">
-                All {MAX_ADMIN_ACCOUNTS} admin accounts are taken, so new sign-ups
-                are closed. If you should have access, contact the boss directly.
-              </p>
+          {/* Mode toggle — the Create Account tab only exists while zero
+              accounts exist. After the first account, admins grant seats. */}
+          {bootstrapOpen ? (
+            <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-[#101012] p-1">
+              {(
+                [
+                  { id: "signin", label: "Sign In" },
+                  { id: "signup", label: "Create Account" },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => switchMode(t.id)}
+                  className={cn(
+                    "rounded-lg py-2 font-display text-xs font-extrabold uppercase tracking-[0.12em] transition-colors",
+                    mode === t.id
+                      ? "bg-gold/15 text-gold"
+                      : "text-[#888] hover:text-white",
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
           ) : (
+            <div className="mt-6 rounded-xl border border-gold/20 bg-gold/5 px-4 py-3 text-center text-xs leading-relaxed text-[#b8b8b8]">
+              Sign-ups are closed — new accounts are added by an existing admin
+              from the dashboard.
+            </div>
+          )}
+
           <form onSubmit={submit} className="mt-6 flex flex-col gap-4">
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
@@ -297,18 +308,15 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
             <p className="text-center text-xs leading-relaxed text-[#666]">
               {mode === "signin"
-                ? "First time here? Create your account above — one account, full access, My Bratha."
-                : seatsFull
-                  ? "This admin seat is already taken. Try a different email, My Bratha."
-                  : "Passwords are stored encrypted. This seat is the key to the showroom."}
+                ? "Sign in with the email and password your admin set up for you."
+                : "Passwords are stored encrypted. This seat is the key to the showroom."}
             </p>
           </form>
-          )}
 
-          {mode === "signup" && !seatsFull && (
+          {mode === "signup" && bootstrapOpen && (
             <p className="mt-4 text-center text-xs font-semibold text-gold/80">
-              {seatsTaken} of {MAX_ADMIN_ACCOUNTS} admin seats filled ·{" "}
-              {seatsLeft} remaining
+              First of {MAX_ADMIN_ACCOUNTS} seats — the other two are added by
+              admins from the dashboard.
             </p>
           )}
 

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import {
   Car,
   Download,
@@ -11,6 +11,8 @@ import {
   Phone,
   Plus,
   Trash2,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -26,12 +28,16 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { formatNaira, waLink } from "@/lib/site";
 
-type Tab = "overview" | "inventory" | "leads";
+type Tab = "overview" | "inventory" | "leads" | "team";
+
+// Must match MAX_ADMIN_ACCOUNTS in src/convex/auth.ts.
+const MAX_ADMIN_ACCOUNTS = 3;
 
 const TABS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "inventory", label: "Inventory", icon: Car },
   { id: "leads", label: "Leads & Inquiries", icon: MessageSquare },
+  { id: "team", label: "Team", icon: Users },
 ];
 
 function formatDate(ts?: number) {
@@ -413,6 +419,225 @@ function LeadsPanel({ leads }: { leads: Lead[] | undefined }) {
   );
 }
 
+/* ───────────────────── Team panel ───────────────────── */
+
+function TeamPanel({
+  accounts,
+  currentUserId,
+  onCreateUser,
+}: {
+  accounts: Doc<"users">[] | undefined;
+  currentUserId: string | undefined;
+  onCreateUser: (args: {
+    email: string;
+    password: string;
+    name?: string;
+  }) => Promise<unknown>;
+}) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
+
+  const count = accounts?.length ?? 0;
+  const seatsLeft = Math.max(MAX_ADMIN_ACCOUNTS - count, 0);
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail.includes("@")) {
+      setMessage({ ok: false, text: "Enter a valid email address." });
+      return;
+    }
+    if (password.length < 8) {
+      setMessage({ ok: false, text: "Password must be at least 8 characters." });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await onCreateUser({
+        email: trimmedEmail,
+        password,
+        name: name.trim() || undefined,
+      });
+      setMessage({
+        ok: true,
+        text: `${trimmedEmail} now has the throne. Share the password securely.`,
+      });
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Could not create that account.";
+      setMessage({ ok: false, text: msg });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="font-display text-xl font-black text-white">
+          The <span className="text-gold">Team</span>
+        </h2>
+        <span className="badge-chip badge-available">
+          {count} of {MAX_ADMIN_ACCOUNTS} seats filled
+        </span>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#151517]">
+        <table className="w-full min-w-[520px] text-sm">
+          <thead>
+            <tr className="border-b border-white/10 text-left font-display text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#888]">
+              <th className="px-4 py-3.5">Account</th>
+              <th className="px-4 py-3.5">Email</th>
+              <th className="px-4 py-3.5">Joined</th>
+              <th className="px-4 py-3.5">Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {accounts === undefined ? (
+              <tr>
+                <td colSpan={4} className="px-4 py-10 text-center">
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-gold" />
+                </td>
+              </tr>
+            ) : (
+              accounts.map((a) => (
+                <tr
+                  key={a._id}
+                  className="border-b border-white/5 transition-colors hover:bg-white/5"
+                >
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-2 font-semibold text-white">
+                      {a.name || "—"}
+                      {a._id === currentUserId && (
+                        <span className="badge-chip badge-new">You</span>
+                      )}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-[#b8b8b8]">{a.email ?? "—"}</td>
+                  <td className="px-4 py-3 text-[#888]">
+                    {formatDate(a._creationTime)}
+                  </td>
+                  <td className="px-4 py-3 text-[#b8b8b8]">
+                    <span className="capitalize">{a.role ?? "admin"}</span>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {seatsLeft > 0 ? (
+        <form
+          onSubmit={handleAdd}
+          className="rounded-2xl border border-white/10 bg-[#151517] p-5"
+        >
+          <p className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-gold">
+            Grant a Seat
+          </p>
+          <p className="mt-1 text-xs text-[#888]">
+            {seatsLeft} seat{seatsLeft === 1 ? "" : "s"} remaining. The new
+            admin signs in with this email and password.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <div>
+              <label htmlFor="team-name" className="field-label">
+                Full Name
+              </label>
+              <input
+                id="team-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Aliyu Mohammad"
+                className="input-dark"
+                disabled={submitting}
+              />
+            </div>
+            <div>
+              <label htmlFor="team-email" className="field-label">
+                Email *
+              </label>
+              <input
+                id="team-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="input-dark"
+                disabled={submitting}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <label htmlFor="team-password" className="field-label">
+                Password *
+              </label>
+              <input
+                id="team-password"
+                type="text"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min. 8 characters"
+                className="input-dark"
+                disabled={submitting}
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+
+          {message && (
+            <p
+              role="alert"
+              className={cn(
+                "mt-4 rounded-xl border px-4 py-3 text-sm",
+                message.ok
+                  ? "border-[#25d366]/40 bg-[#25d366]/10 text-[#4ade80]"
+                  : "border-red/40 bg-red/10 text-[#ff8b97]",
+              )}
+            >
+              {message.text}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn btn-red btn-sm mt-5"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Creating…
+              </>
+            ) : (
+              <>
+                <UserPlus className="h-4 w-4" /> Grant Seat
+              </>
+            )}
+          </button>
+        </form>
+      ) : (
+        <div className="rounded-2xl border border-gold/20 bg-gold/5 px-4 py-5 text-center text-sm text-[#b8b8b8]">
+          All {MAX_ADMIN_ACCOUNTS} seats are filled — the roster is complete. 👑
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ───────────────────── Page ───────────────────── */
 
 export default function Admin() {
@@ -424,6 +649,8 @@ export default function Admin() {
 
   const cars = useQuery(api.inventory.list);
   const leads = useQuery(api.inquiries.list);
+  const accounts = useQuery(api.accounts.list);
+  const createUser = useAction(api.accounts.createUser);
   const removeCar = useMutation(api.inventory.removeCar);
 
   if (isLoading) {
@@ -581,6 +808,13 @@ export default function Admin() {
             />
           )}
           {tab === "leads" && <LeadsPanel leads={leads} />}
+          {tab === "team" && (
+            <TeamPanel
+              accounts={accounts}
+              currentUserId={user?._id}
+              onCreateUser={createUser}
+            />
+          )}
         </main>
       </div>
 
