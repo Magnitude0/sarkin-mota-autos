@@ -31,3 +31,15 @@ export const getCurrentUser = async (ctx: QueryCtx) => {
   }
   return await ctx.db.get(userId);
 };
+
+/**
+ * Total number of registered accounts. Public on purpose — the auth page
+ * uses it to show how many admin seats are left, and the server enforces
+ * the actual cap during account creation.
+ */
+export const count = query({
+  args: {},
+  handler: async (ctx) => {
+    return (await ctx.db.query("users").collect()).length;
+  },
+});

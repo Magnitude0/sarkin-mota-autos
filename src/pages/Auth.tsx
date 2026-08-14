@@ -1,4 +1,5 @@
 import { LogoMark } from "@/components/site/SiteLogo";
+import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
 import {
   ArrowRight,
@@ -12,7 +13,12 @@ import {
 } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
+import { useQuery } from "convex/react";
 import { cn } from "@/lib/utils";
+
+// Must match MAX_ADMIN_ACCOUNTS in src/convex/auth.ts — the server enforces the
+// cap; this constant only drives the UI.
+const MAX_ADMIN_ACCOUNTS = 3;
 
 interface AuthProps {
   redirectAfterAuth?: string;
@@ -45,6 +51,9 @@ function friendlyAuthError(err: unknown, mode: Mode): string {
   if (lower.includes("password") && lower.includes("at least")) {
     return `Password must be at least ${PASSWORD_MIN} characters.`;
   }
+  if (lower.includes("seats are taken") || lower.includes("sign-ups are closed")) {
+    return "All three admin seats are taken — sign-ups are closed, My Bratha.";
+  }
   if (lower.includes("email")) {
     return "That email doesn't look right. Check it and try again.";
   }
@@ -62,6 +71,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     searchParams.get("returnTo"),
     redirectAfterAuth,
   );
+
+  // Live account count so the sign-up tab knows how many seats are left.
+  const accountCount = useQuery(api.users.count);
+  const seatsFull = accountCount !== undefined && accountCount >= MAX_ADMIN_ACCOUNTS;
+  const seatsTaken = accountCount ?? 0;
+  const seatsLeft = Math.max(MAX_ADMIN_ACCOUNTS - seatsTaken, 0);
 
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -86,6 +101,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
     if (!password) {
       setError("Enter your password to continue.");
+      return;
+    }
+    if (mode === "signup" && seatsFull) {
+      setError("All three admin seats are taken — sign-ups are closed, My Bratha.");
       return;
     }
     if (mode === "signup" && password.length < PASSWORD_MIN) {
@@ -189,6 +208,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             ))}
           </div>
 
+          {mode === "signup" && seatsFull ? (
+            <div className="mt-6 rounded-xl border border-gold/30 bg-gold/10 px-4 py-5 text-center">
+              <p className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-gold">
+                Seats Full 👑
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[#c9c9c9]">
+                All {MAX_ADMIN_ACCOUNTS} admin accounts are taken, so new sign-ups
+                are closed. If you should have access, contact the boss directly.
+              </p>
+            </div>
+          ) : (
           <form onSubmit={submit} className="mt-6 flex flex-col gap-4">
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold" />
@@ -268,9 +298,19 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <p className="text-center text-xs leading-relaxed text-[#666]">
               {mode === "signin"
                 ? "First time here? Create your account above — one account, full access, My Bratha."
-                : "Passwords are stored encrypted. This account is the single key to the showroom."}
+                : seatsFull
+                  ? "This admin seat is already taken. Try a different email, My Bratha."
+                  : "Passwords are stored encrypted. This seat is the key to the showroom."}
             </p>
           </form>
+          )}
+
+          {mode === "signup" && !seatsFull && (
+            <p className="mt-4 text-center text-xs font-semibold text-gold/80">
+              {seatsTaken} of {MAX_ADMIN_ACCOUNTS} admin seats filled ·{" "}
+              {seatsLeft} remaining
+            </p>
+          )}
 
           <p className="mt-6 text-center text-xs text-[#666]">
             <Link
