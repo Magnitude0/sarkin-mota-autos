@@ -1,30 +1,29 @@
-import { useId } from "react";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
+import logoUrl from "@/assets/logo.svg";
 
 /**
- * The Sarkin Mota "M" mark — two intersecting golden angular blocks with a
- * diagonal negative-space cut, per the company logo.
+ * The real Sarkin Mota company logo (black tile with the white "M" mark).
+ * Used everywhere the brand appears — header, footer, auth and admin.
  */
-export function LogoMark({ size = 44 }: { size?: number }) {
-  const gradientId = useId();
+export function LogoMark({
+  size = 44,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
-    <span
-      className="inline-flex shrink-0 items-center justify-center"
-      style={{ width: size, height: size }}
+    <img
+      src={logoUrl}
+      alt=""
       aria-hidden="true"
-    >
-      <svg viewBox="0 0 120 84" style={{ width: "100%", height: "100%" }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#FFE566" />
-            <stop offset="1" stopColor="#C9A227" />
-          </linearGradient>
-        </defs>
-        <path d="M8 8 L50 8 L64 68 L8 68 Z" fill={`url(#${gradientId})`} />
-        <path d="M70 8 L112 8 L112 68 L56 68 Z" fill={`url(#${gradientId})`} />
-      </svg>
-    </span>
+      width={size}
+      height={size}
+      draggable={false}
+      className={cn("shrink-0 select-none", className)}
+      style={{ width: size, height: size }}
+    />
   );
 }
 
