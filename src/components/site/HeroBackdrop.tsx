@@ -57,7 +57,7 @@ export function HeroBackdrop() {
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
       {HERO_VIDEO ? (
         <video
-          className="absolute inset-0 h-full w-full scale-[1.08] object-cover opacity-[0.55] blur-[6px]"
+          className="absolute inset-0 h-full w-full scale-[1.08] object-cover opacity-[0.4] blur-[3px]"
           autoPlay
           muted
           loop
@@ -74,8 +74,8 @@ export function HeroBackdrop() {
             src={HERO_IMAGES[0]}
             alt=""
             draggable={false}
-            className="absolute inset-0 h-full w-full object-cover blur-[6px]"
-            style={{ opacity: 0.55 }}
+            className="absolute inset-0 h-full w-full object-cover blur-[3px]"
+            style={{ opacity: 0.4 }}
           />
         ) : null
       ) : (
@@ -88,14 +88,14 @@ export function HeroBackdrop() {
             initial={{ opacity: 0, scale: 1.02 }}
             animate={
               i === index
-                ? { opacity: 0.55, scale: 1.16 }
+                ? { opacity: 0.4, scale: 1.16 }
                 : { opacity: 0, scale: 1.02 }
             }
             transition={{
               opacity: { duration: 1.6, ease: [0.4, 0, 0.2, 1] },
               scale: { duration: HERO_SLIDE_SECONDS, ease: "linear" },
             }}
-            className="absolute inset-0 h-full w-full object-cover blur-[6px] will-change-transform"
+            className="absolute inset-0 h-full w-full object-cover blur-[3px] will-change-transform"
           />
         ))
       )}
