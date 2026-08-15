@@ -57,7 +57,7 @@ export function HeroBackdrop() {
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
       {HERO_VIDEO ? (
         <video
-          className="absolute inset-0 h-full w-full scale-[1.08] object-cover opacity-[0.4] blur-[3px]"
+          className="absolute inset-0 h-full w-full scale-[1.08] object-cover opacity-[0.55] blur-[2px]"
           autoPlay
           muted
           loop
@@ -74,8 +74,8 @@ export function HeroBackdrop() {
             src={HERO_IMAGES[0]}
             alt=""
             draggable={false}
-            className="absolute inset-0 h-full w-full object-cover blur-[3px]"
-            style={{ opacity: 0.4 }}
+            className="absolute inset-0 h-full w-full object-cover blur-[2px]"
+            style={{ opacity: 0.55 }}
           />
         ) : null
       ) : (
@@ -88,22 +88,22 @@ export function HeroBackdrop() {
             initial={{ opacity: 0, scale: 1.02 }}
             animate={
               i === index
-                ? { opacity: 0.4, scale: 1.16 }
+                ? { opacity: 0.55, scale: 1.16 }
                 : { opacity: 0, scale: 1.02 }
             }
             transition={{
               opacity: { duration: 1.6, ease: [0.4, 0, 0.2, 1] },
               scale: { duration: HERO_SLIDE_SECONDS, ease: "linear" },
             }}
-            className="absolute inset-0 h-full w-full object-cover blur-[3px] will-change-transform"
+            className="absolute inset-0 h-full w-full object-cover blur-[2px] will-change-transform"
           />
         ))
       )}
 
       {/* Readability overlays — keep the copy crisp over the show */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/45" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/25 to-[#0a0a0a]/55" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-[#0a0a0a]/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-[#0a0a0a]/25" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
     </div>
   );
 }
