@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   Bell,
   Car as CarIcon,
   ChevronDown,
@@ -26,14 +25,10 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { TikTokIcon, WhatsAppIcon } from "@/components/site/icons";
 import {
-  calcEMI,
   CATEGORIES,
-  MACHINE_OPTIONS,
-  WA_BUDGET_MATCH,
   WA_GENERAL,
   WA_SOURCE,
 } from "@/lib/site";
-import { cn } from "@/lib/utils";
 
 /* ───────────────────────── Hero ───────────────────────── */
 
@@ -293,159 +288,6 @@ function WhySection() {
   );
 }
 
-/* ───────────────────── EMI Calculator ───────────────────── */
-
-function Slider({
-  label,
-  value,
-  min,
-  max,
-  step,
-  format,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  format: (v: number) => string;
-  onChange: (v: number) => void;
-}) {
-  const pct = ((value - min) / (max - min)) * 100;
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between">
-        <label className="field-label mb-0">{label}</label>
-        <span className="font-display text-base font-extrabold text-gold">
-          {format(value)}
-        </span>
-      </div>
-      <input
-        type="range"
-        className="slider"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-label={label}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{ "--fill": `${pct}%` } as React.CSSProperties}
-      />
-    </div>
-  );
-}
-
-function EMICalculator() {
-  const [value, setValue] = useState(60000000);
-  const [depositPct, setDepositPct] = useState(40);
-  const [months, setMonths] = useState(24);
-  const result = calcEMI(value, depositPct, months);
-
-  return (
-    <section className="py-20 sm:py-24">
-      <div className="container-site">
-        <Reveal className="text-center">
-          <span className="section-label">Crunch the Numbers</span>
-          <h2 className="h-display mt-4 text-[clamp(1.6rem,3.5vw,2.6rem)] text-white">
-            Build Your Own <span className="text-red">Payment Plan</span>
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[#a8a8a8]">
-            Flexible 40% minimum deposit. You decide the rest.
-          </p>
-        </Reveal>
-
-        <Reveal delay={0.1}>
-          <div
-            className="mx-auto mt-12 grid max-w-4xl gap-8 rounded-[20px] border border-white/10 bg-[#151517] p-7 shadow-[0_8px_32px_rgba(0,0,0,0.4)] sm:p-10 lg:grid-cols-2"
-            style={{ transform: "none" }}
-          >
-            {/* Sliders */}
-            <div className="flex flex-col justify-center gap-9">
-              <Slider
-                label="Machine Value"
-                value={value}
-                min={2000000}
-                max={180000000}
-                step={1000000}
-                format={(v) => "₦" + (v / 1000000).toFixed(1) + "M"}
-                onChange={setValue}
-              />
-              <Slider
-                label="Deposit %"
-                value={depositPct}
-                min={40}
-                max={80}
-                step={5}
-                format={(v) => v + "%"}
-                onChange={setDepositPct}
-              />
-              <Slider
-                label="Repayment"
-                value={months}
-                min={6}
-                max={36}
-                step={1}
-                format={(v) => `${v} months`}
-                onChange={setMonths}
-              />
-            </div>
-
-            {/* Results */}
-            <div className="flex flex-col justify-center gap-5 rounded-2xl border border-gold/20 bg-gradient-to-br from-[#1c1c1e] to-[#14140f] p-7">
-              <div>
-                <p className="field-label mb-1">Required Down Payment</p>
-                <p className="font-display text-3xl font-black text-gold">
-                  {new Intl.NumberFormat("en-NG", {
-                    style: "currency",
-                    currency: "NGN",
-                    maximumFractionDigits: 0,
-                  }).format(result.deposit)}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="field-label mb-1">Est. Monthly Payment</p>
-                  <p className="font-display text-xl font-extrabold text-white">
-                    {new Intl.NumberFormat("en-NG", {
-                      style: "currency",
-                      currency: "NGN",
-                      maximumFractionDigits: 0,
-                    }).format(result.monthly)}
-                  </p>
-                </div>
-                <div>
-                  <p className="field-label mb-1">Balance to Finance</p>
-                  <p className="font-display text-xl font-extrabold text-white">
-                    {new Intl.NumberFormat("en-NG", {
-                      style: "currency",
-                      currency: "NGN",
-                      maximumFractionDigits: 0,
-                    }).format(result.balance)}
-                  </p>
-                </div>
-              </div>
-              <a
-                href={WA_BUDGET_MATCH}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-gold btn-block"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Match Machines to My Budget
-              </a>
-              <p className="text-center text-xs text-[#888]">
-                Indicative terms at 15% p.a. Contact showroom for personalised
-                terms.
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 /* ───────────────────── Categories ───────────────────── */
 
 const CATEGORY_ICONS: Record<string, typeof CarIcon> = {
@@ -692,7 +534,7 @@ function VIPSection() {
 
             <div>
               <LeadForm
-                machineOptions={MACHINE_OPTIONS}
+                machineOptions={CATEGORIES.map((c) => c.name)}
                 machineLabel="Machine You Want"
                 submitLabel="SEND LEAD TO MY BRATHA 👑"
               />
@@ -799,7 +641,6 @@ export default function Landing() {
       <FeaturedSection onInquire={setInquireCar} />
       <div className="gold-divider container-site" aria-hidden="true" />
       <WhySection />
-      <EMICalculator />
       <div className="gold-divider container-site" aria-hidden="true" />
       <Categories />
       <Testimonials />

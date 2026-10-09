@@ -1,14 +1,8 @@
-import { Calendar, Fuel, Gauge, Heart, Crown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Calendar, Fuel, Gauge, Crown } from "lucide-react";
 import { Link } from "react-router";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import {
-  formatNaira,
-  getSavedIds,
-  MIN_DEPOSIT_PCT,
-  toggleSavedId,
-} from "@/lib/site";
+import { formatNaira } from "@/lib/site";
 import { CarImage } from "./CarImage";
 
 export type Car = Doc<"inventory">;
@@ -43,18 +37,6 @@ export function CarCard({
   onInquire?: (car: Car) => void;
   className?: string;
 }) {
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    setSaved(getSavedIds().includes(car._id));
-  }, [car._id]);
-
-  const handleHeart = () => {
-    setSaved(toggleSavedId(car._id).includes(car._id));
-  };
-
-  const deposit = Math.round(car.price * (MIN_DEPOSIT_PCT / 100));
-
   return (
     <article
       className={cn(
@@ -84,24 +66,6 @@ export function CarCard({
             <span className="badge-chip badge-reserved">Reserved</span>
           )}
         </div>
-
-        {/* Save heart */}
-        <button
-          type="button"
-          aria-label={saved ? "Remove from saved machines" : "Save machine"}
-          onClick={(e) => {
-            e.preventDefault();
-            handleHeart();
-          }}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/50 backdrop-blur transition-all hover:scale-110"
-        >
-          <Heart
-            className={cn(
-              "h-4 w-4 transition-colors",
-              saved ? "fill-red text-red" : "text-white",
-            )}
-          />
-        </button>
       </Link>
 
       <div className="flex flex-1 flex-col p-5">
@@ -117,9 +81,6 @@ export function CarCard({
         <div className="mt-2 flex items-end justify-between gap-2">
           <p className="font-display text-xl font-black tracking-tight text-gold">
             {formatNaira(car.price)}
-          </p>
-          <p className="text-right text-xs font-semibold text-red">
-            or {formatNaira(deposit)} deposit
           </p>
         </div>
 

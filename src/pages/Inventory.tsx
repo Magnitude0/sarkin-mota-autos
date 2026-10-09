@@ -1,28 +1,23 @@
-import { useQuery } from "convex/react";
-import {
-  BadgeCheck,
-  Car as CarIcon,
+import { useQuery } from "convex/react";import { Car as CarIcon,
   RotateCcw,
   Search,
   ShieldCheck,
   Truck,
-  Wallet,
 } from "lucide-react";
+
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { CarCard, type Car } from "@/components/site/CarCard";
 import { InquireModal } from "@/components/site/InquireModal";
 import { PageHero, SiteLayout } from "@/components/site/SiteLayout";
-import { WhatsAppIcon } from "@/components/site/icons";
-import { WA_SOURCE } from "@/lib/site";
+import { WA_SOURCE, DIRECT_SOURCE_BADGE } from "@/lib/site";
 
 const TRUST_BADGES = [
   { icon: BadgeCheck, label: "Certified True Mileage" },
   { icon: ShieldCheck, label: "150-Point Inspection" },
   { icon: BadgeCheck, label: "Carfax Verified" },
   { icon: Truck, label: "Nationwide Delivery" },
-  { icon: Wallet, label: "40% Deposit Plans" },
 ];
 
 type SortKey = "newest" | "price-asc" | "price-desc";
@@ -141,6 +136,15 @@ export default function Inventory() {
               </span>
             </div>
           ))}
+          <div
+            key={DIRECT_SOURCE_BADGE.label}
+            className="flex items-center justify-center gap-2.5 text-center"
+          >
+            <DIRECT_SOURCE_BADGE.icon className="h-5 w-5 shrink-0 text-gold" />
+            <span className="font-display text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[#d8d8d8]">
+              {DIRECT_SOURCE_BADGE.label}
+            </span>
+          </div>
         </div>
       </section>
 

@@ -10,7 +10,7 @@ import { InquireModal } from "@/components/site/InquireModal";
 import { Reveal } from "@/components/site/Reveal";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { WhatsAppIcon } from "@/components/site/icons";
-import { calcEMI, formatNaira, MIN_DEPOSIT_PCT, PHONE_DISPLAY, PHONE_TEL, waLink } from "@/lib/site";
+import { formatNaira, PHONE_DISPLAY, PHONE_TEL, waLink } from "@/lib/site";
 
 function specsOf(car: Car) {
   return [
@@ -135,14 +135,6 @@ export default function CarDetail() {
                 {car.description || "Full inspection and Carfax report available on request — no stories, just the facts."}
               </p>
             </div>
-
-            {/* Payment calculator */}
-            <div className="mt-10 rounded-[20px] border border-gold/20 bg-[#151517] p-7">
-              <h2 className="font-display text-lg font-extrabold text-white">
-                Finance This Machine
-              </h2>
-              <PerCarCalculator price={car.price} />
-            </div>
           </div>
 
           {/* Right sticky panel */}
@@ -158,10 +150,6 @@ export default function CarDetail() {
                 {formatNaira(car.price)}
               </span>
             </div>
-            <p className="mt-2 text-sm font-semibold text-red">
-              or {formatNaira(Math.round(car.price * (MIN_DEPOSIT_PCT / 100)))} deposit to start
-            </p>
-
             <div className="mt-6 overflow-hidden rounded-xl border border-white/10">
               <table className="w-full text-sm">
                 <tbody>
@@ -244,73 +232,5 @@ export default function CarDetail() {
         onClose={() => setInquireOpen(false)}
       />
     </SiteLayout>
-  );
-}
-
-function PerCarCalculator({ price }: { price: number }) {
-  const [depositPct, setDepositPct] = useState(40);
-  const [months, setMonths] = useState(24);
-  const result = calcEMI(price, depositPct, months);
-
-  const pct = ((depositPct - 40) / (80 - 40)) * 100;
-  const mPct = ((months - 6) / (36 - 6)) * 100;
-
-  return (
-    <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-center">
-      <div className="flex flex-1 flex-col gap-6">
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="field-label mb-0">Deposit %</span>
-            <span className="font-display text-sm font-extrabold text-gold">
-              {depositPct}%
-            </span>
-          </div>
-          <input
-            type="range"
-            className="slider"
-            min={40}
-            max={80}
-            step={5}
-            value={depositPct}
-            aria-label="Deposit percentage"
-            onChange={(e) => setDepositPct(Number(e.target.value))}
-            style={{ "--fill": `${pct}%` } as React.CSSProperties}
-          />
-        </div>
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="field-label mb-0">Repayment</span>
-            <span className="font-display text-sm font-extrabold text-gold">
-              {months} months
-            </span>
-          </div>
-          <input
-            type="range"
-            className="slider"
-            min={6}
-            max={36}
-            step={1}
-            value={months}
-            aria-label="Repayment months"
-            onChange={(e) => setMonths(Number(e.target.value))}
-            style={{ "--fill": `${mPct}%` } as React.CSSProperties}
-          />
-        </div>
-      </div>
-
-      <div className="w-full rounded-2xl border border-gold/20 bg-[#1c1c1e] p-5 sm:w-64">
-        <p className="field-label mb-1">Est. Monthly Payment</p>
-        <p className="font-display text-2xl font-black text-gold">
-          {formatNaira(result.monthly)}
-        </p>
-        <p className="mt-2 text-xs text-[#888]">
-          {formatNaira(result.deposit)} down · {formatNaira(result.balance)}{" "}
-          financed
-        </p>
-        <p className="mt-2 text-[0.68rem] text-[#666]">
-          Indicative 15% p.a. Personalised terms on request.
-        </p>
-      </div>
-    </div>
   );
 }
